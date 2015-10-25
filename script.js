@@ -1,14 +1,13 @@
-dashLength = 1000;
+dashLength = 300;
 var dotLength = dashLength / 3;
 
 
 // this is a unction delcaration, it loads before code is executed
 function addClickListener(id, fn) {
-  document.getElementById(id).addEventListener('click', fn);
+  document.getElementById(id).addEventListener("click", fn);
 }
 
-
-beep_object = T("saw", {freq:630, mul:0.2});
+beep_object = T("saw", {freq:800, mul:0.1});
 
 function beep_core(duration) {
 
@@ -24,8 +23,11 @@ queuedTime = 0; //TODO: get this into the MorseEngine class/prototype thingy
 MorseEngine = {
   beep: function(time) {
     console.log("beeping for " + time + "ms");
-    setTimeout(function() { return beep_core(time) }, queuedTime);
+    setTimeout(function() {
+      return beep_core(time) }, queuedTime);
     queuedTime+=time;
+
+
   },
 
   sleep: function(time) {
@@ -35,14 +37,73 @@ MorseEngine = {
   },
 }
 
-// addClickListener('stop', function(){
-//   console.log("stopping");
-//   beep_object.release();
-// });
+addClickListener("spanify", function(){
+  element = document.getElementById("input");
+  spanify(element);
+});
 
-addClickListener('play', function(){
+addClickListener("unspanify", function(){
+  element = document.getElementById("input");
+  unspanify(element);
+});
+
+
+function isSpanified(element) {
+  var children = element.childNodes;
+  if(children.length < 1) { return false }
+
+  for(var i = 0; i < children.length; i++) {
+    if(children[i].nodeName != "SPAN") {
+      return false;
+     }
+  }
+  return true;
+}
+
+// wrap each letter in a span
+function spanify(element) {
+  if(isSpanified(element)) {
+    console.log("already spanified");
+    return;
+  }
+
+  letters = element.innerHTML;
+  lettersArray = letters.split('');
+
+  for(var i = 0; i < lettersArray.length; i++) {
+    lettersArray[i]
+  }
+
+  element.innerHTML = letters.split('').map(function(letter, index){
+    return "<span id='l" + index + "'>" + letter + "</span>"
+  }).join('');
+
+}
+
+function unspanify(element) {
+  if(!isSpanified(element)) {
+    console.log("nothing to unspanify");
+    return;
+  }
+
+  var children = element.childNodes;
+  var text = "";
+
+  // NodeList does not have Array.prototype properties
+  for(var i = 0; i < children.length; i++) {
+    text = text + children[i].innerHTML;
+  }
+
+  element.innerHTML = text;
+}
+
+addClickListener("play", function(){
   queuedTime = 0; // reset the queued time.
-  text = document.getElementById('input').value;
+
+  textHolder = document.getElementById("input");
+  unspanify(textHolder);
+  text = textHolder.innerHTML;
+  spanify(textHolder);
 
   // for each letter in the text box
   for( var i = 0; i < text.length; i++ ) {
@@ -51,6 +112,10 @@ addClickListener('play', function(){
       MorseEngine.sleep(dashLength*2);
       continue;
     }
+
+    fn = function(){
+      letterHolder = document.getElementById("l" + i).style.color="red"
+    };
 
     letter = morseTable[text[i].toLowerCase()]
 
