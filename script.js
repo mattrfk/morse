@@ -1,38 +1,50 @@
-dashLength = 300;
-var dotLength = dashLength / 3;
-
+var dotLength = 100;
+var dashLength = dotLength*3;
 
 // this is a unction delcaration, it loads before code is executed
 function addClickListener(id, fn) {
   document.getElementById(id).addEventListener("click", fn);
 }
 
-beep_object = T("saw", {freq:800, mul:0.1});
+beep_object = T("saw", {freq:100, mul:0.1});
 
 function beep_core(duration) {
 
   beep_object.play();
 
   setTimeout(function(){
-    console.log("stopping after " + duration);
+    // console.log("stopping after " + duration);
     beep_object.pause()
   }, duration);
 }
 
+
+function addStyle(i){
+  letterHolder = document.getElementById("l" + i).style.color = "red";
+}
+
+function removeStyle(i) {
+  letterHolder = document.getElementById("l" + i).style.color = null;
+}
+
+
 queuedTime = 0; //TODO: get this into the MorseEngine class/prototype thingy
 MorseEngine = {
-  beep: function(time) {
-    console.log("beeping for " + time + "ms");
+  beep: function(time, i) {
+    console.log(i);
+    var i = i;
     setTimeout(function() {
-      return beep_core(time) }, queuedTime);
+      if(i !== undefined) { addStyle(i) };
+      return beep_core(time)
+    }, queuedTime);
     queuedTime+=time;
-
-
   },
 
-  sleep: function(time) {
-    console.log("sleeping for " + time + "ms");
-    setTimeout(function() { console.log("done sleeping"); }, queuedTime);
+  sleep: function(time, i) {
+    var i = i;
+    setTimeout(function() {
+      if(i !== undefined) { removeStyle(i) };
+    }, queuedTime);
     queuedTime += time;
   },
 }
@@ -113,22 +125,18 @@ addClickListener("play", function(){
       continue;
     }
 
-    fn = function(){
-      letterHolder = document.getElementById("l" + i).style.color="red"
-    };
-
     letter = morseTable[text[i].toLowerCase()]
 
     for( var n = 0; n < letter.length; n++) {
       if(letter[n] == "-") {
-        MorseEngine.beep(dashLength);
+        MorseEngine.beep(dashLength, i);
       }
       else {
-        MorseEngine.beep(dotLength);
+        MorseEngine.beep(dotLength, i);
       }
-      MorseEngine.sleep(dotLength);
+      MorseEngine.sleep(dotLength, i);
     }
-    MorseEngine.sleep(dashLength);
+    MorseEngine.sleep(dashLength, i);
   }
 });
 

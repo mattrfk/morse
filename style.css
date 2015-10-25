@@ -41,9 +41,8 @@
 #slider {
   display: block;
   padding: 2em;
-}
-
-
-#active {
-
+  margin-top: 3em;
+  transform: scale(1.5);
+  margin-left: auto;
+  margin-right: auto;
 }
