@@ -1,19 +1,28 @@
 var dotLength = 100;
 var dashLength = dotLength*3;
+var beep_object = T("saw", {freq:100, mul:0.1});
+var timeoutIds = []; // so I can clear them
+
+var textHolder;
+window.onload = function(){
+  textHolder = document.getElementById("input");
+};
 
 // this is a unction delcaration, it loads before code is executed
 function addClickListener(id, fn) {
   document.getElementById(id).addEventListener("click", fn);
 }
 
-beep_object = T("saw", {freq:100, mul:0.1});
+// so I can keep track of the IDs
+function setTimeoutWrapper(fn, time) {
+  timeoutIds.push(setTimeout(fn, time));
+}
 
 function beep_core(duration) {
 
   beep_object.play();
 
   setTimeout(function(){
-    // console.log("stopping after " + duration);
     beep_object.pause()
   }, duration);
 }
@@ -33,7 +42,7 @@ MorseEngine = {
   beep: function(time, i) {
     console.log(i);
     var i = i;
-    setTimeout(function() {
+    setTimeoutWrapper(function() {
       if(i !== undefined) { addStyle(i) };
       return beep_core(time)
     }, queuedTime);
@@ -42,23 +51,12 @@ MorseEngine = {
 
   sleep: function(time, i) {
     var i = i;
-    setTimeout(function() {
+    setTimeoutWrapper(function() {
       if(i !== undefined) { removeStyle(i) };
     }, queuedTime);
     queuedTime += time;
   },
 }
-
-addClickListener("spanify", function(){
-  element = document.getElementById("input");
-  spanify(element);
-});
-
-addClickListener("unspanify", function(){
-  element = document.getElementById("input");
-  unspanify(element);
-});
-
 
 function isSpanified(element) {
   var children = element.childNodes;
@@ -109,10 +107,22 @@ function unspanify(element) {
   element.innerHTML = text;
 }
 
+addClickListener("stop", function(){
+
+
+  timeoutIds.forEach(function(id){
+    window.clearTimeout(id);
+  });
+
+  timeoutIds = [];
+
+  unspanify(textHolder);
+});
+
 addClickListener("play", function(){
   queuedTime = 0; // reset the queued time.
 
-  textHolder = document.getElementById("input");
+  // reset styles and such for each letter
   unspanify(textHolder);
   text = textHolder.innerHTML;
   spanify(textHolder);
