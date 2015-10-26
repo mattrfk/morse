@@ -14,10 +14,16 @@
       Hello world.
     </div>
 
-    <button id="play">play</button>
-    <button id="stop">stop</button>
+    <button class="controlButton" id="play">play</button>
+    <button class="controlButton" id="stop">stop</button>
 
-    <input id="slider" type="range" min="100" max="1000" />
+    <div id="sliderHolder">
+      <input id="slider" type="range" min="50" max="300" />
+      <span>dot length</span>
+      <span id="sliderValue">val</span>
+      <span>ms</span>
+    </div>
+
 </div>
 </body>
 

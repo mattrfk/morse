@@ -1,12 +1,25 @@
 var dotLength = 100;
 var dashLength = dotLength*3;
-var beep_object = T("saw", {freq:100, mul:0.1});
+var beep_object = T("saw", {freq:300, mul:0.1});
 var timeoutIds = []; // so I can clear them
 
 var textHolder;
+var rangeInput;
 window.onload = function(){
   textHolder = document.getElementById("input");
   spanify(textHolder);
+
+  sliderValue = document.getElementById("sliderValue");
+  rangeInput = document.getElementById("slider");
+
+  rangeInput.value = dotLength;
+  sliderValue.innerHTML = dotLength;
+
+  rangeInput.addEventListener('input', function(){
+    sliderValue.innerHTML = this.value;
+    dotLength = parseInt(this.value);
+    dashLength = dotLength*3;
+  });
 };
 
 // this is a unction delcaration, it loads before code is executed
@@ -31,7 +44,7 @@ function beep_core(duration) {
 
 function addStyle(i){
   letterHolder = document.getElementById("l" + i);
-  letterHolder.style.transform = "translateY(-10px) scale(1.8)";
+  letterHolder.style.transform = "translateY(-15px) scale(1.5)";
   letterHolder.style.color = "rgb(93, 193, 22)";
 }
 
