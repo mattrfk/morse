@@ -82,7 +82,7 @@ function spanify(element) {
     return;
   }
 
-  letters = element.innerHTML;
+  letters = element.innerText;
   lettersArray = letters.split('');
 
   for(var i = 0; i < lettersArray.length; i++) {

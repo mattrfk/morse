@@ -51,4 +51,5 @@
 span {
   display: inline-block; /* Transform only works on block elements. Why? */
   transition: all 100ms ease;
+  white-space: pre;
 }
