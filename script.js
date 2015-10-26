@@ -6,6 +6,7 @@ var timeoutIds = []; // so I can clear them
 var textHolder;
 window.onload = function(){
   textHolder = document.getElementById("input");
+  spanify(textHolder);
 };
 
 // this is a unction delcaration, it loads before code is executed
@@ -29,11 +30,15 @@ function beep_core(duration) {
 
 
 function addStyle(i){
-  letterHolder = document.getElementById("l" + i).style.color = "red";
+  letterHolder = document.getElementById("l" + i);
+  letterHolder.style.transform = "translateY(-10px) scale(1.5)";
+  letterHolder.style.color = "red";
 }
 
 function removeStyle(i) {
-  letterHolder = document.getElementById("l" + i).style.color = null;
+  letterHolder = document.getElementById("l" + i);
+  letterHolder.style.color = null;
+  letterHolder.style.transform = null;
 }
 
 
@@ -108,8 +113,6 @@ function unspanify(element) {
 }
 
 addClickListener("stop", function(){
-
-
   timeoutIds.forEach(function(id){
     window.clearTimeout(id);
   });
