@@ -31,13 +31,13 @@ function beep_core(duration) {
 
 function addStyle(i){
   letterHolder = document.getElementById("l" + i);
-  letterHolder.style.transform = "translateY(-10px) scale(1.5)";
-  letterHolder.style.color = "red";
+  letterHolder.style.transform = "translateY(-10px) scale(1.8)";
+  letterHolder.style.color = "rgb(93, 193, 22)";
 }
 
-function removeStyle(i) {
+function removeStyle(i, done) {
   letterHolder = document.getElementById("l" + i);
-  letterHolder.style.color = null;
+  if(done){ letterHolder.style.color = null }
   letterHolder.style.transform = null;
 }
 
@@ -54,10 +54,11 @@ MorseEngine = {
     queuedTime+=time;
   },
 
-  sleep: function(time, i) {
+  sleep: function(time, i, done) {
     var i = i;
+    var done = done;
     setTimeoutWrapper(function() {
-      if(i !== undefined) { removeStyle(i) };
+      if(i !== undefined) { removeStyle(i, done) };
     }, queuedTime);
     queuedTime += time;
   },
@@ -149,7 +150,7 @@ addClickListener("play", function(){
       }
       MorseEngine.sleep(dotLength, i);
     }
-    MorseEngine.sleep(dashLength, i);
+    MorseEngine.sleep(dashLength, i, true);
   }
 });
 

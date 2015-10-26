@@ -1,22 +1,23 @@
 <!DOCTYPE html>
+
 <html>
 <head>
-  <!-- viewport tag, created by Apple for Safari, adopted by others.
-        mobile devices use a virtual window; by default content is
-        rendered off the screen so non-mobile layouts aren't broken
-        (they're just tiny, panable full size versions).-->
+  <!--  Mobile devices use a virtual window,
+        which renders off-screen by default -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="style.css" rel="stylesheet"> </link>
 </head>
 
 <body>
 <div id="container">
-  <div>
-    <div id="input" cols="40" rows="10" autofocus="true" contenteditable>hello   world</div>
+    <div id="input" contenteditable>
+      Hello world.
+    </div>
+
     <button id="play">play</button>
     <button id="stop">stop</button>
+
     <input id="slider" type="range" min="100" max="1000" />
-  </div>
 </div>
 </body>
 
