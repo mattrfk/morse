@@ -1,26 +1,64 @@
+"use strict"
+
 var dotLength = 100;
 var dashLength = dotLength*3;
 var beep_object = T("saw", {freq:300, mul:0.1});
-var timeoutIds = []; // so I can clear them
 
+// keep track of events on the queue, so I can clear them.
+var timeoutIds = [];
+
+// user input
 var textHolder;
+
+// slider to adjust dotLength and dashLength
 var rangeInput;
+
+// display values of the slider
+var dotLengthDisplay;
+var dashLengthDisplay;
+
 window.onload = function(){
   textHolder = document.getElementById("input");
+  rangeInput = document.getElementById("slider");
+  dotLengthDisplay = document.getElementById("dotLength");
+  dashLengthDisplay = document.getElementById("dashLength");
+
   spanify(textHolder);
 
-  sliderValue = document.getElementById("sliderValue");
-  rangeInput = document.getElementById("slider");
-
-  rangeInput.value = dotLength;
-  sliderValue.innerHTML = dotLength;
-
-  rangeInput.addEventListener('input', function(){
-    sliderValue.innerHTML = this.value;
-    dotLength = parseInt(this.value);
-    dashLength = dotLength*3;
-  });
+  rangeInput.addEventListener("input", updateSlider);
+  updateSlider();
 };
+
+var MorseEngine = {
+  queuedTime: 0,
+
+  beep: function(time, i) {
+    var i = i;
+    setTimeoutWrapper(function() {
+      if(i !== undefined) { addStyle(i) };
+      return beep_core(time)
+    }, this.queuedTime);
+    this.queuedTime+=time;
+  },
+
+  sleep: function(time, i, done) {
+    var i = i;
+    var done = done;
+    setTimeoutWrapper(function() {
+      if(i !== undefined) { removeStyle(i, done) };
+    }, this.queuedTime);
+    this.queuedTime += time;
+  },
+}
+
+
+function updateSlider() {
+  dotLength = parseInt(rangeInput.value);
+  dashLength = dotLength*3;
+
+  dotLengthDisplay.innerHTML = '"dit" = ' + dotLength + "ms"
+  dashLengthDisplay.innerHTML = '"dah" = ' + dashLength + "ms";
+}
 
 // this is a unction delcaration, it loads before code is executed
 function addClickListener(id, fn) {
@@ -33,48 +71,22 @@ function setTimeoutWrapper(fn, time) {
 }
 
 function beep_core(duration) {
-
   beep_object.play();
-
   setTimeout(function(){
     beep_object.pause()
   }, duration);
 }
 
-
 function addStyle(i){
-  letterHolder = document.getElementById("l" + i);
+  var letterHolder = document.getElementById("l" + i);
   letterHolder.style.transform = "translateY(-15px) scale(1.5)";
   letterHolder.style.color = "rgb(93, 193, 22)";
 }
 
 function removeStyle(i, done) {
-  letterHolder = document.getElementById("l" + i);
+  var letterHolder = document.getElementById("l" + i);
   if(done){ letterHolder.style.color = null }
   letterHolder.style.transform = null;
-}
-
-
-queuedTime = 0; //TODO: get this into the MorseEngine class/prototype thingy
-MorseEngine = {
-  beep: function(time, i) {
-    console.log(i);
-    var i = i;
-    setTimeoutWrapper(function() {
-      if(i !== undefined) { addStyle(i) };
-      return beep_core(time)
-    }, queuedTime);
-    queuedTime+=time;
-  },
-
-  sleep: function(time, i, done) {
-    var i = i;
-    var done = done;
-    setTimeoutWrapper(function() {
-      if(i !== undefined) { removeStyle(i, done) };
-    }, queuedTime);
-    queuedTime += time;
-  },
 }
 
 function isSpanified(element) {
@@ -89,15 +101,14 @@ function isSpanified(element) {
   return true;
 }
 
-// wrap each letter in a span
+// Wrap each letter in a span, for the animations.
 function spanify(element) {
   if(isSpanified(element)) {
-    console.log("already spanified");
     return;
   }
 
-  letters = element.innerText;
-  lettersArray = letters.split('');
+  var letters = element.innerText;
+  var lettersArray = letters.split('');
 
   for(var i = 0; i < lettersArray.length; i++) {
     lettersArray[i]
@@ -106,12 +117,11 @@ function spanify(element) {
   element.innerHTML = letters.split('').map(function(letter, index){
     return "<span id='l" + index + "'>" + letter + "</span>"
   }).join('');
-
 }
 
+// unwrap the letters
 function unspanify(element) {
   if(!isSpanified(element)) {
-    console.log("nothing to unspanify");
     return;
   }
 
@@ -126,7 +136,7 @@ function unspanify(element) {
   element.innerHTML = text;
 }
 
-addClickListener("stop", function(){
+function stop() {
   timeoutIds.forEach(function(id){
     window.clearTimeout(id);
   });
@@ -134,25 +144,29 @@ addClickListener("stop", function(){
   timeoutIds = [];
 
   unspanify(textHolder);
-});
+}
+
+addClickListener("stop", stop);
 
 addClickListener("play", function(){
-  queuedTime = 0; // reset the queued time.
+  stop();
+  MorseEngine.queuedTime = 0; // reset the queued time.
 
   // reset styles and such for each letter
   unspanify(textHolder);
-  text = textHolder.innerHTML;
+  var text = textHolder.innerHTML;
   spanify(textHolder);
 
   // for each letter in the text box
   for( var i = 0; i < text.length; i++ ) {
 
+    // pause between words
     if(text[i] == " ") {
       MorseEngine.sleep(dashLength*2);
       continue;
     }
 
-    letter = morseTable[text[i].toLowerCase()]
+    var letter = morseTable[text[i].toLowerCase()]
 
     for( var n = 0; n < letter.length; n++) {
       if(letter[n] == "-") {
@@ -163,13 +177,12 @@ addClickListener("play", function(){
       }
       MorseEngine.sleep(dotLength, i);
     }
-    MorseEngine.sleep(dashLength, i, true);
+    MorseEngine.sleep(dashLength, i, true);  // space between letters
   }
 });
 
-
 // thank you to https://gist.github.com/mohayonao/094c71af14fe4791c5dd
-morseTable = {
+var morseTable = {
   "0": "-----",
   "1": ".----",
   "2": "..---",
