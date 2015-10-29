@@ -107,7 +107,7 @@ function spanify(element) {
     return;
   }
 
-  var letters = element.innerText;
+  var letters = element.innerHTML;
   var lettersArray = letters.split('');
 
   for(var i = 0; i < lettersArray.length; i++) {
@@ -166,7 +166,7 @@ addClickListener("play", function(){
       continue;
     }
 
-    var letter = morseTable[text[i].toLowerCase()]
+    var letter = morseTable[text[i].toLowerCase()];
 
     for( var n = 0; n < letter.length; n++) {
       if(letter[n] == "-") {
